@@ -7,12 +7,20 @@ export function generateTenantWorkbook(tenant, rawData) {
   const agencyMap = new Map(agencies?.map(ag => [ag.id, ag.name]) || []);
   const candidateMap = new Map(candidates?.map(c => [c.id, c]) || []);
 
-  const formattedCandidates = (candidates || []).map(c => ({
+ const formattedCandidates = [...(candidates || [])]
+  .sort((a, b) => {
+    const slA = Number(a.sl) || 0;
+    const slB = Number(b.sl) || 0;
+    return slA - slB;
+  })
+  .map(c => ({
     "SL": c.sl,
     "Candidate Name": c.name,
     "Passport No": c.passport_no,
     "Current Stage": c.current_stage,
-    "Agent Name": c.agent_id ? (agentMap.get(c.agent_id) || "Unknown Agent") : "N/A",
+    "Agent Name": c.agent_id
+      ? (agentMap.get(c.agent_id) || "Unknown Agent")
+      : "N/A",
     "Received Date": c.received_date,
     "Is Returned": c.is_returned ? "Yes" : "No",
     "Returned Date": c.returned_date || "N/A"
